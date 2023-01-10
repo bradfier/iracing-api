@@ -1,0 +1,12 @@
+[package]
+name = "iracing-api"
+version = "0.0.1"
+description = "Placeholder crate for an iRacing Data API library"
+edition = "2021"
+authors = ["Richard Bradfield <bradfier@fstab.me>"]
+license = "AGPL-3.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
