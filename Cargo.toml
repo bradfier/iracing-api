@@ -16,6 +16,7 @@ sha2 = "0.10.6"
 url = { version = "2.3.1", features = ["serde"] }
 thiserror = "1"
 rpassword = "7.2.0"
+time = { version = "0.3.28", features = ["serde-human-readable"]}
 
 [dev-dependencies]
 tokio = { version = "1.24.1", features = ["rt", "macros"] }

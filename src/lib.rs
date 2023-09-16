@@ -1,4 +1,5 @@
 use crate::auth::{AuthHash, AuthRequest};
+use crate::types::SeriesList;
 use reqwest::{ClientBuilder, Method};
 use serde::{de::DeserializeOwned, Deserialize};
 use thiserror::Error;
@@ -95,6 +96,12 @@ impl Client {
             inner: self.fetch("data/track/get").await?,
         })
     }
+
+    pub async fn get_series_info(&self) -> Result<SeriesList, Error> {
+        Ok(SeriesList {
+            inner: self.fetch("data/series/seasons").await?,
+        })
+    }
 }
 
 #[cfg(test)]
@@ -129,5 +136,13 @@ mod tests {
         let tracks = c.get_track_info().await.unwrap();
 
         assert!(tracks.inner.len() > 300);
+    }
+
+    #[tokio::test]
+    async fn get_series_info() {
+        let c = get_test_client().await;
+        let series = c.get_series_info().await.unwrap();
+
+        assert!(series.inner.len() > 50);
     }
 }

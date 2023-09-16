@@ -1,4 +1,8 @@
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ApiDate(#[serde(with = "time::serde::rfc3339")] OffsetDateTime);
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Car {
@@ -226,4 +230,36 @@ pub enum Category {
 #[derive(Debug, Clone)]
 pub struct Tracks {
     pub inner: Vec<Track>,
+}
+
+/// Concise series definition as the list of fields is truly vast.
+#[derive(Debug, Clone)]
+pub struct SeriesList {
+    pub inner: Vec<Series>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Series {
+    pub active: bool,
+    pub driver_changes: bool,
+    pub schedules: Vec<Schedule>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Schedule {
+    pub season_name: String,
+    pub race_lap_limit: Option<u16>,
+    pub race_time_limit: Option<u16>,
+    pub track: ScheduleTrack,
+    pub race_time_descriptors: Vec<SessionGroup>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScheduleTrack {
+    pub track_name: String,
+    pub config_name: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SessionGroup {
+    pub session_times: Option<Vec<ApiDate>>,
 }
