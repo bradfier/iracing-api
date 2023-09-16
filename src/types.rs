@@ -1,8 +1,17 @@
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
 use time::OffsetDateTime;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApiDate(#[serde(with = "time::serde::rfc3339")] OffsetDateTime);
+
+impl Deref for ApiDate {
+    type Target = OffsetDateTime;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Car {
