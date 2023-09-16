@@ -1,10 +1,11 @@
+use crate::auth::{AuthHash, AuthRequest};
 use reqwest::{ClientBuilder, Method};
 use serde::{de::DeserializeOwned, Deserialize};
 use thiserror::Error;
 use types::{Cars, Member, Tracks};
 use url::Url;
 
-mod auth;
+pub mod auth;
 pub mod types;
 
 const DEFAULT_BASE_URL: &str = "https://members-ng.iracing.com/";
@@ -34,13 +35,22 @@ impl Client {
     /// The iRacing developers have requested that API users re-authenticate as infrequently as
     /// possible, so try and re-use the constructed [`Client`] where possible.
     pub async fn login(email: &str, password: &str) -> Result<Self, Error> {
+        let auth_body = auth::AuthRequest::new(email, password);
+        Self::inner_login(auth_body).await
+    }
+
+    pub async fn login_with_hash(email: &str, auth_hash: AuthHash) -> Result<Self, Error> {
+        let auth_body = auth::AuthRequest::new_from_hash(email, auth_hash);
+        Self::inner_login(auth_body).await
+    }
+
+    async fn inner_login(request: AuthRequest) -> Result<Self, Error> {
         let client = ClientBuilder::new().cookie_store(true).build()?;
         let base_url: Url = DEFAULT_BASE_URL.parse().unwrap();
 
-        let auth_body = auth::AuthRequest::new(email, password);
         let _req = client
             .request(Method::POST, base_url.join("auth").unwrap())
-            .json(&auth_body)
+            .json(&request)
             .send()
             .await?;
 
@@ -93,9 +103,8 @@ mod tests {
 
     async fn get_test_client() -> Client {
         let username = std::env::var("TEST_USERNAME").unwrap();
-        let password = std::env::var("TEST_PASSWORD").unwrap();
-        let c = Client::login(&username, &password).await.unwrap();
-        c
+        let auth_hash = std::env::var("AUTH_HASH").unwrap();
+        Client::login_with_hash(&username, auth_hash).await.unwrap()
     }
 
     #[tokio::test]
