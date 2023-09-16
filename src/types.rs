@@ -255,6 +255,7 @@ pub struct Series {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Schedule {
+    pub series_name: String,
     pub season_name: String,
     pub race_lap_limit: Option<u16>,
     pub race_time_limit: Option<u16>,
@@ -264,6 +265,7 @@ pub struct Schedule {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScheduleTrack {
+    pub track_id: i64,
     pub track_name: String,
     pub config_name: Option<String>,
 }
