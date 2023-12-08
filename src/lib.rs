@@ -1,6 +1,6 @@
 use crate::auth::{AuthHash, AuthRequest};
 use crate::types::SeriesList;
-use reqwest::{ClientBuilder, Method};
+use reqwest::{ClientBuilder, Method, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize};
 use thiserror::Error;
 use types::{Cars, Member, Tracks};
@@ -13,10 +13,21 @@ const DEFAULT_BASE_URL: &str = "https://members-ng.iracing.com/";
 
 #[derive(Error, Debug)]
 pub enum Error {
+    #[error("Failed initial authentication with iRacing: {}", .0.message)]
+    UnsuccessfulAuth(UnsuccessfulAuth),
     #[error("Error making request: {0}")]
     RequestError(#[from] reqwest::Error),
     #[error("Unknown error")]
     Unknown(String),
+}
+
+impl Error {
+    pub fn is_unauthorized(&self) -> bool {
+        match self {
+            Error::RequestError(e) => e.status().is_some_and(|s| s == StatusCode::UNAUTHORIZED),
+            _ => false,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -28,6 +39,30 @@ struct IRRedirect {
 pub struct Client {
     inner: reqwest::Client,
     base_url: Url,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SuccessfulAuth {
+    pub authcode: String,
+    #[serde(rename = "custId")]
+    pub cust_id: i32,
+    pub email: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct UnsuccessfulAuth {
+    pub authcode: i32,
+    pub inactive: bool,
+    pub message: String,
+    #[serde(rename = "verificationRequired")]
+    pub verification_required: bool,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum AuthResponse {
+    Success(SuccessfulAuth),
+    Failure(UnsuccessfulAuth),
 }
 
 impl Client {
@@ -49,17 +84,28 @@ impl Client {
         let client = ClientBuilder::new().cookie_store(true).build()?;
         let base_url: Url = DEFAULT_BASE_URL.parse().unwrap();
 
-        let _req = client
+        let res: AuthResponse = client
             .request(Method::POST, base_url.join("auth").unwrap())
             .json(&request)
             .send()
+            .await?
+            .error_for_status()?
+            .json()
             .await?;
 
-        // Successful auth should have set cookies on our client
-        Ok(Self {
-            inner: client,
-            base_url,
-        })
+        match res {
+            AuthResponse::Success(_) => {
+                // Successful auth should have set cookies on our client
+                Ok(Self {
+                    inner: client,
+                    base_url,
+                })
+            }
+            AuthResponse::Failure(unsuccessful) => {
+                Err(Error::UnsuccessfulAuth(unsuccessful))
+            }
+        }
+
     }
 
     // iRacing returns API responses by serving them from S3 buckets, where you first receive a
