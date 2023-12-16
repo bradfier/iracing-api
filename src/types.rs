@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use time::OffsetDateTime;
 
+pub mod assets;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApiDate(#[serde(with = "time::serde::rfc3339")] OffsetDateTime);
 
@@ -23,11 +25,11 @@ pub struct Car {
     pub allow_wheel_color: bool,
     pub award_exempt: bool,
     pub car_dirpath: String,
-    pub car_id: i64,
+    pub car_id: i32,
     pub car_name: String,
     pub car_name_abbreviated: String,
     pub car_types: Vec<CarType>,
-    pub car_weight: i64,
+    pub car_weight: i32,
     pub categories: Vec<String>,
     pub created: String,
     pub first_sale: String,
@@ -35,18 +37,18 @@ pub struct Car {
     pub free_with_subscription: bool,
     pub has_headlights: bool,
     pub has_multiple_dry_tire_types: bool,
-    pub hp: i64,
+    pub hp: i32,
     pub is_ps_purchasable: bool,
-    pub max_power_adjust_pct: i64,
-    pub max_weight_penalty_kg: i64,
-    pub min_power_adjust_pct: i64,
-    pub package_id: i64,
-    pub patterns: i64,
+    pub max_power_adjust_pct: i32,
+    pub max_weight_penalty_kg: i32,
+    pub min_power_adjust_pct: i32,
+    pub package_id: i32,
+    pub patterns: i32,
     pub price: f64,
     pub price_display: Option<String>,
     pub retired: bool,
     pub search_filters: String,
-    pub sku: i64,
+    pub sku: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,7 +63,7 @@ pub struct Cars {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Member {
-    pub cust_id: i64,
+    pub cust_id: i32,
     pub email: String,
     pub username: String,
     pub display_name: String,
@@ -69,11 +71,11 @@ pub struct Member {
     pub last_name: String,
     pub on_car_name: String,
     pub member_since: String,
-    pub last_test_track: i64,
-    pub last_test_car: i64,
-    pub last_season: i64,
-    pub flags: i64,
-    pub club_id: i64,
+    pub last_test_track: i32,
+    pub last_test_car: i32,
+    pub last_season: i32,
+    pub flags: i32,
+    pub club_id: i32,
     pub club_name: String,
     pub connection_type: String,
     pub download_server: String,
@@ -85,7 +87,7 @@ pub struct Member {
     pub licenses: Licenses,
     pub car_packages: Vec<Package>,
     pub track_packages: Vec<Package>,
-    pub other_owned_packages: Vec<i64>,
+    pub other_owned_packages: Vec<i32>,
     pub dev: bool,
     pub alpha_tester: bool,
     pub broadcaster: bool,
@@ -112,18 +114,18 @@ pub struct Account {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Package {
-    pub package_id: i64,
-    pub content_ids: Vec<i64>,
+    pub package_id: i32,
+    pub content_ids: Vec<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Helmet {
-    pub pattern: i64,
+    pub pattern: i32,
     pub color1: String,
     pub color2: String,
     pub color3: String,
-    pub face_type: i64,
-    pub helmet_type: i64,
+    pub face_type: i32,
+    pub helmet_type: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -136,19 +138,19 @@ pub struct Licenses {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct License {
-    pub category_id: i64,
+    pub category_id: i32,
     pub category: String,
-    pub license_level: i64,
+    pub license_level: i32,
     pub safety_rating: f64,
     pub cpi: f64,
-    pub irating: i64,
-    pub tt_rating: i64,
-    pub mpr_num_races: i64,
+    pub irating: i32,
+    pub tt_rating: i32,
+    pub mpr_num_races: i32,
     pub color: String,
     pub group_name: String,
-    pub group_id: i64,
+    pub group_id: i32,
     pub pro_promotable: bool,
-    pub mpr_num_tts: i64,
+    pub mpr_num_tts: i32,
 }
 
 // This likely contains information about bans, chat restrictions etc
@@ -157,69 +159,69 @@ pub struct Restrictions {}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Suit {
-    pattern: i64,
+    pattern: i32,
     color1: String,
     color2: String,
     color3: String,
-    body_type: i64,
+    body_type: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Track {
-    ai_enabled: bool,
-    allow_pitlane_collisions: bool,
-    allow_rolling_start: bool,
-    allow_standing_start: bool,
-    award_exempt: bool,
-    category: Category,
-    category_id: i64,
-    closes: String,
-    config_name: Option<String>,
-    corners_per_lap: i64,
-    created: String,
-    first_sale: String,
-    free_with_subscription: bool,
-    fully_lit: bool,
-    grid_stalls: i64,
-    has_opt_path: bool,
-    has_short_parade_lap: bool,
-    has_start_zone: bool,
-    has_svg_map: bool,
-    is_dirt: bool,
-    is_oval: bool,
-    is_ps_purchasable: bool,
-    lap_scoring: i64,
-    latitude: f64,
-    location: String,
-    longitude: f64,
-    max_cars: i64,
-    night_lighting: bool,
-    nominal_lap_time: f64,
-    number_pitstalls: i64,
-    opens: String,
-    package_id: i64,
-    pit_road_speed_limit: Option<i64>,
-    price: f64,
-    price_display: Option<String>,
-    priority: i64,
-    purchasable: bool,
-    qualify_laps: i64,
-    restart_on_left: bool,
-    retired: bool,
-    search_filters: String,
-    site_url: Option<String>,
-    sku: i64,
-    solo_laps: i64,
-    start_on_left: bool,
-    supports_grip_compound: bool,
-    tech_track: bool,
-    time_zone: String,
-    track_config_length: f64,
-    track_dirpath: String,
-    track_id: i64,
-    track_name: String,
-    track_types: Vec<TrackType>,
-    banking: Option<String>,
+    pub ai_enabled: bool,
+    pub allow_pitlane_collisions: bool,
+    pub allow_rolling_start: bool,
+    pub allow_standing_start: bool,
+    pub award_exempt: bool,
+    pub category: String,
+    pub category_id: i32,
+    pub closes: String,
+    pub config_name: Option<String>,
+    pub corners_per_lap: i32,
+    pub created: String,
+    pub first_sale: String,
+    pub free_with_subscription: bool,
+    pub fully_lit: bool,
+    pub grid_stalls: i32,
+    pub has_opt_path: bool,
+    pub has_short_parade_lap: bool,
+    pub has_start_zone: bool,
+    pub has_svg_map: bool,
+    pub is_dirt: bool,
+    pub is_oval: bool,
+    pub is_ps_purchasable: bool,
+    pub lap_scoring: i32,
+    pub latitude: f64,
+    pub location: String,
+    pub longitude: f64,
+    pub max_cars: i32,
+    pub night_lighting: bool,
+    pub nominal_lap_time: f64,
+    pub number_pitstalls: i32,
+    pub opens: String,
+    pub package_id: i32,
+    pub pit_road_speed_limit: Option<i32>,
+    pub price: f64,
+    pub price_display: Option<String>,
+    pub priority: i32,
+    pub purchasable: bool,
+    pub qualify_laps: i32,
+    pub restart_on_left: bool,
+    pub retired: bool,
+    pub search_filters: String,
+    pub site_url: Option<String>,
+    pub sku: i32,
+    pub solo_laps: i32,
+    pub start_on_left: bool,
+    pub supports_grip_compound: bool,
+    pub tech_track: bool,
+    pub time_zone: String,
+    pub track_config_length: f64,
+    pub track_dirpath: String,
+    pub track_id: i32,
+    pub track_name: String,
+    pub track_types: Vec<TrackType>,
+    pub banking: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -265,7 +267,7 @@ pub struct Schedule {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScheduleTrack {
-    pub track_id: i64,
+    pub track_id: i32,
     pub track_name: String,
     pub config_name: Option<String>,
 }

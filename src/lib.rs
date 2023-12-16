@@ -5,6 +5,7 @@ use serde::{de::DeserializeOwned, Deserialize};
 use thiserror::Error;
 use types::{Cars, Member, Tracks};
 use url::Url;
+use crate::types::assets::{CarAssetsMap, TrackAssetsMap};
 
 pub mod auth;
 pub mod types;
@@ -137,10 +138,18 @@ impl Client {
         })
     }
 
+    pub async fn get_car_assets(&self) -> Result<CarAssetsMap, Error> {
+        Ok(self.fetch("data/car/assets").await?)
+    }
+
     pub async fn get_track_info(&self) -> Result<Tracks, Error> {
         Ok(Tracks {
             inner: self.fetch("data/track/get").await?,
         })
+    }
+
+    pub async fn get_track_assets(&self) -> Result<TrackAssetsMap, Error> {
+        Ok(self.fetch("data/track/assets").await?)
     }
 
     pub async fn get_series_info(&self) -> Result<SeriesList, Error> {
